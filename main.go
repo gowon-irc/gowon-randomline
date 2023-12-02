@@ -60,8 +60,11 @@ func main() {
 	mqttOpts.OnConnect = onConnectHandler
 
 	mr := gowon.NewMessageRouter()
+
 	h := newHandler()
+	h.Input("handling")
 	mr.AddRegex("test", h.Handle)
+
 	mr.Subscribe(mqttOpts, moduleName)
 
 	log.Print("connecting to broker")
