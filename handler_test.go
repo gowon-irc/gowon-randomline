@@ -6,14 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewHandler(t *testing.T) {
-	h := newHandler()
+func TestBuildHandler(t *testing.T) {
+	h := newBuilder().build()
 
-	assert.NotNil(t, h)
+	out := h.Msg()
+
+	assert.Equal(t, "", out)
 }
 
-func TestHandlerBuilderInput(t *testing.T) {
-	b := newBuilder().inputText("handling input").build()
+func TestBuildHandlerWithInput(t *testing.T) {
+	lines := []string{"handling input"}
+	b := newBuilder().inputText(lines).build()
 
 	out := b.Msg()
 

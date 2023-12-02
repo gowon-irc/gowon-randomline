@@ -61,7 +61,8 @@ func main() {
 
 	mr := gowon.NewMessageRouter()
 
-	h := newBuilder().inputText("handling").build()
+	lines := []string{"handling"}
+	h := newBuilder().inputText(lines).build()
 	mr.AddRegex("test", h.handle)
 
 	mr.Subscribe(mqttOpts, moduleName)
