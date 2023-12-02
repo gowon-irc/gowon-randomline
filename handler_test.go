@@ -12,11 +12,10 @@ func TestNewHandler(t *testing.T) {
 	assert.NotNil(t, h)
 }
 
-func TestHandlerInput(t *testing.T) {
-	h := newHandler()
+func TestHandlerBuilderInput(t *testing.T) {
+	b := newBuilder().inputText("handling input").build()
 
-	h.Input("handling input")
-	out := h.Msg()
+	out := b.Msg()
 
 	assert.Equal(t, "handling input", out)
 }
