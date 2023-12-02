@@ -23,10 +23,6 @@ const (
 	mqttDisconnectTimeout    = 1000
 )
 
-func helloHandler(m gowon.Message) (string, error) {
-	return "hello", nil
-}
-
 func defaultPublishHandler(c mqtt.Client, msg mqtt.Message) {
 	log.Printf("unexpected message:  %s\n", msg)
 }
@@ -64,7 +60,8 @@ func main() {
 	mqttOpts.OnConnect = onConnectHandler
 
 	mr := gowon.NewMessageRouter()
-	mr.AddRegex("hello", helloHandler)
+	h := newHandler()
+	mr.AddRegex("test", h.Handle)
 	mr.Subscribe(mqttOpts, moduleName)
 
 	log.Print("connecting to broker")
