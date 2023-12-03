@@ -28,7 +28,11 @@ func TestBuildHandlerWithInput(t *testing.T) {
 
 func TestBuildHandlerWithShuffle(t *testing.T) {
 	lines := []string{"a", "b", "c"}
-	h, err := newBuilder().input(lines).setSeed(0).shuffle(true).build()
+	h, err := newBuilder().
+		input(lines).
+		setSeed(0).
+		shuffle(true).
+		build()
 
 	assert.Nil(t, err)
 

@@ -63,7 +63,8 @@ func (b *handlerBuilder) shuffle(shuffle bool) *handlerBuilder {
 		rs := rand.NewSource(b.handler.seed)
 		r := rand.New(rs)
 		r.Shuffle(len(b.handler.lines), func(i, j int) {
-			b.handler.lines[i], b.handler.lines[j] = b.handler.lines[j], b.handler.lines[i]
+			b.handler.lines[i], b.handler.lines[j] =
+				b.handler.lines[j], b.handler.lines[i]
 		})
 	}
 
