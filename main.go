@@ -18,6 +18,7 @@ type Options struct {
 	Broker  string `short:"b" long:"broker" env:"GOWON_BROKER" default:"localhost:1883" description:"mqtt broker"`
 	InputFn string `short:"i" long:"input" env:"GOWON_RANDOMLINE_INPUT" default:"input.txt" description:"input lines"`
 	Regex   string `short:"r" long:"regex" env:"GOWON_RANDOMLINE_REGEX" default:"" description:"command name"`
+	Chance  int    `short:"C" long:"chance" env:"GOWON_RANDOMLINE_CHANCE" default:"100" description:"output chance percentage"`
 }
 
 const (
@@ -85,7 +86,11 @@ func main() {
 
 	mr := gowon.NewMessageRouter()
 
-	handler, err := newBuilder().input(lines).shuffle(true).build()
+	handler, err := newBuilder().
+		input(lines).
+		shuffle(true).
+		setChance(opts.Chance).
+		build()
 	if err != nil {
 		panic(err)
 	}

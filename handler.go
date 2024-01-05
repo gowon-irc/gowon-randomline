@@ -12,6 +12,8 @@ type handler struct {
 	lines    []string
 	seed     int64
 	position int
+	chance   int
+	rand     *rand.Rand
 }
 
 func (h *handler) increment() {
@@ -25,6 +27,12 @@ func (h *handler) increment() {
 }
 
 func (h *handler) Msg() string {
+	chance := 100 - h.rand.Intn(100)
+
+	if chance > h.chance {
+		return ""
+	}
+
 	msg := h.lines[h.position]
 	h.increment()
 	return msg
@@ -44,6 +52,7 @@ func newBuilder() *handlerBuilder {
 			lines:    []string{""},
 			seed:     time.Now().UnixNano(),
 			position: 0,
+			chance:   100,
 		},
 	}
 }
@@ -76,10 +85,18 @@ func (b *handlerBuilder) setPosition(position int) *handlerBuilder {
 	return b
 }
 
+func (b *handlerBuilder) setChance(chance int) *handlerBuilder {
+	b.handler.chance = chance
+	return b
+}
+
 func (b *handlerBuilder) build() (handler, error) {
 	if b.handler.position >= len(b.handler.lines) || b.handler.position < 0 {
 		return b.handler, errors.New("position exceeds list length")
 	}
+
+	rs := rand.NewSource(b.handler.seed)
+	b.handler.rand = rand.New(rs)
 
 	return b.handler, nil
 }
