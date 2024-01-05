@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -14,7 +15,9 @@ import (
 )
 
 type Options struct {
-	Broker string `short:"b" long:"broker" env:"GOWON_BROKER" default:"localhost:1883" description:"mqtt broker"`
+	Broker  string `short:"b" long:"broker" env:"GOWON_BROKER" default:"localhost:1883" description:"mqtt broker"`
+	InputFn string `short:"i" long:"input" env:"GOWON_RANDOMLINE_INPUT" default:"input.txt" description:"input lines"`
+	Regex   string `short:"r" long:"regex" env:"GOWON_RANDOMLINE_REGEX" default:"" description:"command name"`
 }
 
 const (
@@ -39,11 +42,32 @@ func onConnectHandler(c mqtt.Client) {
 	log.Println("connected to broker")
 }
 
+func readFile(fn string) ([]string, error) {
+	f, err := os.Open(fn)
+	if err != nil {
+		return []string{""}, err
+	}
+	defer f.Close()
+
+	var out []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		out = append(out, scanner.Text())
+	}
+
+	return out, scanner.Err()
+}
+
 func main() {
 	log.Printf("%s starting\n", moduleName)
 
 	opts := Options{}
 	if _, err := flags.Parse(&opts); err != nil {
+		log.Fatal(err)
+	}
+
+	lines, err := readFile(opts.InputFn)
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -61,14 +85,12 @@ func main() {
 
 	mr := gowon.NewMessageRouter()
 
-	lines := []string{"hello", "goodbye"}
-
-	h, err := newBuilder().input(lines).build()
+	handler, err := newBuilder().input(lines).shuffle(true).build()
 	if err != nil {
 		panic(err)
 	}
 
-	mr.AddRegex("test", h.handle)
+	mr.AddRegex(opts.Regex, handler.handle)
 
 	mr.Subscribe(mqttOpts, moduleName)
 

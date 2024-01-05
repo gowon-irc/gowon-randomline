@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: randomline-input
+data:
+  input.txt: |
+    hello world
+    goodbye world
+    test line 1
+    test line 2

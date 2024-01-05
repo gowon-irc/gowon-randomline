@@ -14,9 +14,36 @@ spec:
       labels:
         app.kubernetes.io/name: randomline
     spec:
+      initContainers:
+        - name: init-file-wait
+          image: alpine:latest
+          command:
+            - "sh"
+            - "-c"
+            - "while [[ ! -f /data/input.txt ]]; do echo waiting for input files; sleep 1; done"
+          volumeMounts:
+            - name: data
+              mountPath: /data
       containers:
         - name: randomline
           image: randomline
           env:
             - name: GOWON_BROKER
               value: mosquitto:1883
+            - name: GOWON_RANDOMLINE_INPUT
+              value: /data/input.txt
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      #     volumeMounts:
+      #       - name: input
+      #         mountPath: /data/input.txt
+      #         subPath: input.txt
+      # volumes:
+      #   - name: input
+      #     configMap:
+      #       name: randomline-input
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: randomline
