@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -28,6 +30,8 @@ func (h *handler) increment() {
 
 func (h *handler) Msg() string {
 	chance := 100 - h.rand.Intn(100)
+
+	log.Println(fmt.Sprintf("chance: %d > %d", chance, h.chance))
 
 	if chance > h.chance {
 		return ""
